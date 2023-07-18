@@ -62,6 +62,15 @@ public class orderdetails {
     }
 
      public static void main(String args[]) {
-        // TODO code application logic here
+        Scanner sc     = new Scanner (System.in);
+        int     choice = 0;
+        // Letting the use choose between the two functions
+        System.out.println("Enter [1] Get Product Info:");
+        choice = sc.nextInt();
+        products p = new products();
+        if (choice==1) p.getInfo();
+        
+        System.out.println("Press enter key to continue....");
+        sc.nextLine();
     }
 }

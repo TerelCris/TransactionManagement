@@ -10,6 +10,10 @@ public class orders {
     public String           status;
     public String           comments;
     public int              customerNumber; //Customer Number is a Foreign Key
+    public String           productCode; // Private Key
+    public int              quantityOrdered;
+    public float            priceEach; 
+    public int              orderLineNumber;
     
     public orders() {}
     
@@ -23,35 +27,52 @@ public class orders {
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/dbsales?user=root&password=12345678");
             System.out.println("Connection Successful");
             conn.setAutoCommit(false);
-            PreparedStatement pstmt = conn.prepareStatement("SELECT orderNumber, orderDate, requiredDate, shippedDate, status, comments, customerNumber FROM orders WHERE orderNumber=? LOCK IN SHARE MODE");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT o.orderNumber, o.orderDate, o.requiredDate, o.shippedDate, o.status, o.comments, o.customerNumber, od.productCode, od.quantityOrdered, od.priceEach, od.orderLineNumber FROM orders o JOIN orderdetails od ON o.orderNumber=od.orderNumber WHERE od.orderNumber=? LOCK IN SHARE MODE");
             pstmt.setInt(1, orderNumber);
-
             System.out.println("Press enter key to start retrieving the data");
             sc.nextLine();
             sc.nextLine();
             
             ResultSet rs = pstmt.executeQuery();   
 
+            List <orders> orderList = new ArrayList<>();
+
             while (rs.next()) {
-            orderNumber         = rs.getInt("orderNumber");     
-            orderDate           = rs.getString("orderDate");    
-            requiredDate        = rs.getString("requiredDate");                
-            shippedDate         = rs.getString("shippedDate");                
-            status              = rs.getString("status");
-            comments            = rs.getString("comments");
-            customerNumber      = rs.getInt("customerNumber");
+
+            orders order = new orders();
+                
+            order.orderNumber             = rs.getInt("orderNumber");     
+            order.orderDate               = rs.getString("orderDate");    
+            order.requiredDate            = rs.getString("requiredDate");                
+            order.shippedDate             = rs.getString("shippedDate");                
+            order.status                  = rs.getString("status");
+            order.comments                = rs.getString("comments");
+            order.customerNumber          = rs.getInt("customerNumber");
+            order.productCode             = rs.getString("productCode");
+            order.quantityOrdered         = rs.getInt("quantityOrdered");     
+            order.priceEach               = rs.getFloat("priceEach");
+            order.orderLineNumber         = rs.getInt("orderLineNumber");
+
+            orderList.add(order);
             }
 
             rs.close();
 
-            System.out.println("Order Number: "         + orderNumber);
-            System.out.println("Order Date: "           + orderDate);
-            System.out.println("Required Date: "        + requiredDate);
-            System.out.println("Shipped Date: "         + shippedDate);
-            System.out.println("Order Status: "         + status);
-            System.out.println("Comment: "              + comments);
-            System.out.println("Customer Number "       + customerNumber);
-            
+            for (orders order : orderList){
+            System.out.println("Order Number: "         + order.orderNumber);
+            System.out.println("Order Date: "           + order.orderDate);
+            System.out.println("Required Date: "        + order.requiredDate);
+            System.out.println("Shipped Date: "         + order.shippedDate);
+            System.out.println("Order Status: "         + order.status);
+            System.out.println("Comment: "              + order.comments);
+            System.out.println("Customer Number "       + order.customerNumber);
+            System.out.println("Product Code: "         + order.productCode);
+            System.out.println("Quantity: "             + order.quantityOrdered);
+            System.out.println("Price: "                + order.priceEach);
+            System.out.println("Order Line Number: "    + order.orderLineNumber);
+            System.out.println("");
+            }
+
             System.out.println("Press enter key to end transaction");
             sc.nextLine();
 

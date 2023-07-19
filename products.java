@@ -22,7 +22,8 @@ public class products {
             Connection conn; 
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/dbsales?user=root&password=12345678");
             System.out.println("Connection Successful");
-            conn.setAutoCommit(false);           
+            conn.setAutoCommit(false);     
+                  
             PreparedStatement pstmt = conn.prepareStatement("SELECT productName, productLine, quantityInStock, buyPrice, MSRP FROM products WHERE productCode=? LOCK IN SHARE MODE");
             pstmt.setString(1, productCode);
             

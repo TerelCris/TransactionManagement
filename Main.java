@@ -4,7 +4,6 @@ import java.util.*;
 public class Main {
     public static void main(String[] args){
         orders o = new orders();
-        orderdetails od = new orderdetails();
         products p = new products();
         
         Scanner sc = new Scanner(System.in);
@@ -21,7 +20,7 @@ public class Main {
         if (choice == 1);
         if (choice == 2) p.getInfo();
         if (choice == 3) o.getInfo();
-        if (choice == 4);
+        if (choice == 4) o.cancelOrder();
         
         System.out.println("Press enter key to continue....");
         sc.nextLine();

@@ -24,9 +24,6 @@ public class products {
             System.out.println("Connection Successful");
             conn.setAutoCommit(false);
             
-            // PreparedStatement pstmt = conn.prepareStatement("LOCK TABLE products WRITE/READ");
-            // pstmt.executeUpdate();
-            
             PreparedStatement pstmt = conn.prepareStatement("SELECT productName, productLine, quantityInStock, buyPrice, MSRP FROM products WHERE productCode=? LOCK IN SHARE MODE");
             pstmt.setString(1, productCode);
             

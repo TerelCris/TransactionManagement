@@ -67,8 +67,8 @@ public class orderdetails {
         // Letting the use choose between the two functions
         System.out.println("Enter [1] Get Product Info:");
         choice = sc.nextInt();
-        products p = new products();
-        if (choice==1) p.getInfo();
+        orderdetails od = new orderdetails();
+        if (choice==1) od.getInfo();
         
         System.out.println("Press enter key to continue....");
         sc.nextLine();

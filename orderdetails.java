@@ -1,6 +1,5 @@
 import java.sql.*;
 import java.util.*;
-import java.time.LocalDateTime;
 
 public class orderdetails {
     
@@ -19,7 +18,7 @@ public class orderdetails {
 
         try{
             Connection conn; 
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbsales?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/dbsales?user=root&password=12345678");
             System.out.println("Connection Successful");
             conn.setAutoCommit(false); 
 
@@ -27,6 +26,7 @@ public class orderdetails {
             pstmt.setInt(1, orderNumber);
 
             System.out.println("Press enter key to start retrieving the data");
+            sc.nextLine();
             sc.nextLine();
 
             ResultSet rs = pstmt.executeQuery();   

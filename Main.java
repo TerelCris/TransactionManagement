@@ -14,11 +14,13 @@ public class Main {
         System.out.println("Welcome! Choose your option");
         System.out.println("[1] Create and Order        [2]Inquire Products");
         System.out.println("[3] Retrieve Order Info     [4]Cancel Order");
-        
+        System.out.println("");
+
+        System.out.println("Enter your choice:");
         choice = sc.nextInt();
         if (choice == 1);
-        if (choice == 2);
-        if (choice == 3);
+        if (choice == 2) p.getInfo();
+        if (choice == 3) o.getInfo();
         if (choice == 4);
         
         System.out.println("Press enter key to continue....");

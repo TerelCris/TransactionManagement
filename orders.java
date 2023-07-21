@@ -132,14 +132,19 @@ public class orders {
             choice = sc.nextInt();
 
             if(choice == 1){
-                status = "Cancelled";
-                pstmt = conn.prepareStatement ("UPDATE orders SET status=? WHERE orderNumber=?");
-                pstmt.setString(1,  status);
-                pstmt.setInt(2, orderNumber);
+                if(!status.equals("Shipped")){
+                    status = "Cancelled";
+                    pstmt = conn.prepareStatement ("UPDATE orders SET status=? WHERE orderNumber=?");
+                    pstmt.setString(1,  status);
+                    pstmt.setInt(2, orderNumber);
 
-                pstmt.executeUpdate();
-                System.out.println("Your order has been cancelled");
-                sc.nextLine();
+                    pstmt.executeUpdate();
+                    System.out.println("Your order has been cancelled");
+                    sc.nextLine();
+                }
+                else{
+                    System.out.println("Shipped orders cannot be cancelled");
+                }
             }
 
            if(choice == 2){

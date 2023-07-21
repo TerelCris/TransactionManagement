@@ -72,7 +72,7 @@ public class orders {
             System.out.println("Quantity: "             + order.quantityOrdered);
             System.out.println("Price: "                + order.priceEach);
             System.out.println("Order Line Number: "    + order.orderLineNumber);
-            System.out.println("");
+            System.out.println();
             }
 
             System.out.println("Press enter key to end transaction");
@@ -125,7 +125,7 @@ public class orders {
             System.out.println("Order Date: "           + orderDate);
             System.out.println("Order Status: "         + status);
             System.out.println("Customer Number "       + customerNumber);
-            System.out.println("");
+            System.out.println();
 
             System.out.println("Do you want to cancel the order?");
             System.out.println("[1] YES [2] NO");

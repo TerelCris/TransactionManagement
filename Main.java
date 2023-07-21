@@ -13,7 +13,7 @@ public class Main {
         System.out.println("Welcome! Choose your option");
         System.out.println("[1] Create and Order        [2]Inquire Products");
         System.out.println("[3] Retrieve Order Info     [4]Cancel Order");
-        System.out.println("");
+        System.out.println();
 
         System.out.println("Enter your choice:");
         choice = sc.nextInt();

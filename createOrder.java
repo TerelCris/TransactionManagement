@@ -12,13 +12,17 @@ public class createOrder {
     public int quantityOrdered;
     public float priceEach;
     public int quantityInStock;
-    public float buyPrice;
-    public float MSRP;
 
     public createOrder() {}
 
     public int orderProduct(){
         Scanner sc = new Scanner(System.in);
+        int choice = 0;
+        boolean orderAnotherProduct = true;
+        boolean isConfirmed = true;
+        orders o = new orders();
+        products p = new products();
+
         
         System.out.println("Enter Customer Number:");
         customerNumber = sc.nextInt();
@@ -28,9 +32,6 @@ public class createOrder {
         requiredDate = sc.nextLine();
         System.out.println();
 
-        int choice = 0;
-        boolean orderAnotherProduct = true;
-
         try{
             Connection conn; 
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/dbsales?user=root&password=12345678");
@@ -38,9 +39,7 @@ public class createOrder {
             conn.setAutoCommit(false);
 
             PreparedStatement pstmt = conn.prepareStatement("SELECT orderNumber, orderDate, status, customerNumber FROM orders WHERE orderNumber=? FOR UPDATE");
-            pstmt.setInt(1, orderNumber);
-
-            ResultSet rs = pstmt.executeQuery();   
+            pstmt.setInt(1, orderNumber); 
 
             List <orders> orderList = new ArrayList<>();
 
@@ -62,6 +61,8 @@ public class createOrder {
                 choice = sc.nextInt();
                 System.out.println();
 
+                orderList.add(order);
+
                 if(choice == 1){
                     orderAnotherProduct = true;
                     sc.nextLine();
@@ -73,12 +74,23 @@ public class createOrder {
                 }
             }
 
+            System.out.println("Customer Number" + customerNumber);
+            System.out.println("Required Date of Delivery" + requiredDate);
+            System.out.println("Order Details:");
+            System.out.println();
+
             for(orders order: orderList){
-                System.out.println(customerNumber);
-                System.out.println(requiredDate);
                 System.out.println(order.productCode);
                 System.out.println(order.quantityOrdered);
                 System.out.println(order.priceEach);
+            }
+
+            if (isConfirmed) {
+                o.createOrderRecord(); // Insert new Order Record in the Orders and Orderdetails table
+                p.updateInfo(); // Update the Product Quantity
+                System.out.println("Order confirmed!");
+            } else {
+                System.out.println("Order canceled!");
             }
 
             pstmt.close();

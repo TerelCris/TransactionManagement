@@ -65,6 +65,8 @@ public class products {
         
         float   incr;
         Scanner sc = new Scanner(System.in);
+        createOrder c = new createOrder();
+
         System.out.println("Enter Product Code:");
         productCode = sc.nextLine();
         
@@ -75,38 +77,19 @@ public class products {
             conn.setAutoCommit(false);
             PreparedStatement pstmt = conn.prepareStatement("SELECT productName, productLine, quantityInStock, buyPrice, MSRP FROM products WHERE productCode=? FOR UPDATE");
             pstmt.setString(1, productCode);
-            
-            System.out.println("Press enter key to start retrieving the data");
-            sc.nextLine();
-            
-            ResultSet rs = pstmt.executeQuery();   
-            
-            while (rs.next()) {
-                productName     = rs.getString("productName");
-                productLine     = rs.getString("productLine");
-                quantityInStock = rs.getInt("quantityInStock");
-                buyPrice        = rs.getFloat("buyPrice");
-                MSRP            = rs.getFloat("MSRP");
-            }
-            
-            rs.close();
-            
-            System.out.println("Product Name: " + productName);
-            System.out.println("Product Line: " + productLine);
-            System.out.println("Quantity:     " + quantityInStock);
-            System.out.println("Buy Price:    " + buyPrice);
-            System.out.println("MSRP:         " + MSRP);
-            
-            System.out.println("Press enter key to enter new values for product");
-            sc.nextLine();
 
-            System.out.println("Enter percent increase in MSRP: ");
-            incr = sc.nextFloat();
+            ResultSet rs = pstmt.executeQuery();   
+
+            while (rs.next()) {     
+                quantityInStock = rs.getInt("quantityInStock");
+                
+            }
+
+            productCode = c.productCode;    
+            quantityInStock = quantityInStock - 1;
             
-            MSRP = MSRP * (1+incr/100);
-            
-            pstmt = conn.prepareStatement ("UPDATE products SET MSRP=? WHERE productCode=?");
-            pstmt.setFloat(1,  MSRP);
+            pstmt = conn.prepareStatement ("UPDATE products SET quantityInStock=? WHERE productCode=?");
+            pstmt.setFloat(1,  quantityInStock);
             pstmt.setString(2, productCode);
             pstmt.executeUpdate();
                         

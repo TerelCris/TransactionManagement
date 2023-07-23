@@ -63,7 +63,6 @@ public class products {
     }
     public int updateInfo() {
         
-        float   incr;
         Scanner sc = new Scanner(System.in);
         createOrder c = new createOrder();
 
@@ -86,7 +85,7 @@ public class products {
             }
 
             productCode = c.productCode;    
-            quantityInStock = quantityInStock - 1;
+            quantityInStock = quantityInStock - c.quantityOrdered;
             
             pstmt = conn.prepareStatement ("UPDATE products SET quantityInStock=? WHERE productCode=?");
             pstmt.setFloat(1,  quantityInStock);

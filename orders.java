@@ -1,20 +1,19 @@
-import java.io.ObjectInputFilter.Status;
 import java.sql.*;
 import java.util.*;
 
 public class orders {
 
-    public int              orderNumber;
-    public String           orderDate;
-    public String           requiredDate;
-    public String           shippedDate;
-    public String           status;
-    public String           comments;
-    public int              customerNumber; //Customer Number is a Foreign Key
-    public String           productCode; // Private Key
-    public int              quantityOrdered;
-    public float            priceEach; 
-    public int              orderLineNumber;
+    public int      orderNumber;
+    public String   orderDate;
+    public String   requiredDate;
+    public String   shippedDate;
+    public String   status;
+    public String   comments;
+    public int      customerNumber; 
+    public String   productCode; 
+    public int      quantityOrdered;
+    public float    priceEach; 
+    public int      orderLineNumber;
     
     public orders() {}
     
@@ -43,31 +42,34 @@ public class orders {
 
             orders order = new orders();
                 
-            order.orderNumber             = rs.getInt("orderNumber");     
-            order.orderDate               = rs.getString("orderDate");    
-            order.requiredDate            = rs.getString("requiredDate");                
-            order.shippedDate             = rs.getString("shippedDate");                
-            order.status                  = rs.getString("status");
-            order.comments                = rs.getString("comments");
-            order.customerNumber          = rs.getInt("customerNumber");
-            order.productCode             = rs.getString("productCode");
-            order.quantityOrdered         = rs.getInt("quantityOrdered");     
-            order.priceEach               = rs.getFloat("priceEach");
-            order.orderLineNumber         = rs.getInt("orderLineNumber");
+            orderNumber                     = rs.getInt("orderNumber");     
+            orderDate                       = rs.getString("orderDate");    
+            requiredDate                    = rs.getString("requiredDate");                
+            shippedDate                     = rs.getString("shippedDate");                
+            status                          = rs.getString("status");
+            comments                        = rs.getString("comments");
+            customerNumber                  = rs.getInt("customerNumber");
+            
+            order.productCode               = rs.getString("productCode");
+            order.quantityOrdered           = rs.getInt("quantityOrdered");     
+            order.priceEach                 = rs.getFloat("priceEach");
+            order.orderLineNumber           = rs.getInt("orderLineNumber");
 
             orderList.add(order);
             }
 
             rs.close();
 
+            System.out.println("Order Number: "         + orderNumber);
+            System.out.println("Order Date: "           + orderDate);
+            System.out.println("Required Date: "        + requiredDate);
+            System.out.println("Shipped Date: "         + shippedDate);
+            System.out.println("Order Status: "         + status);
+            System.out.println("Comment: "              + comments);
+            System.out.println("Customer Number "       + customerNumber);
+            System.out.println();
+
             for (orders order : orderList){
-            System.out.println("Order Number: "         + order.orderNumber);
-            System.out.println("Order Date: "           + order.orderDate);
-            System.out.println("Required Date: "        + order.requiredDate);
-            System.out.println("Shipped Date: "         + order.shippedDate);
-            System.out.println("Order Status: "         + order.status);
-            System.out.println("Comment: "              + order.comments);
-            System.out.println("Customer Number "       + order.customerNumber);
             System.out.println("Product Code: "         + order.productCode);
             System.out.println("Quantity: "             + order.quantityOrdered);
             System.out.println("Price: "                + order.priceEach);

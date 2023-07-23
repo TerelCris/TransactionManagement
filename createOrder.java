@@ -1,17 +1,16 @@
 import java.sql.*;
 import java.util.*;
-import java.time.LocalDateTime;
 
 public class createOrder {
     
-    public int customerNumber;
-    public int orderNumber;
-    public LocalDateTime orderDate;
-    public String requiredDate;
-    public String productCode;
-    public int quantityOrdered;
-    public float priceEach;
-    public int quantityInStock;
+    public int      customerNumber;
+    public int      orderNumber;
+    public String   requiredDate;
+    public String   productCode;
+    public int      quantityOrdered;
+    public float    priceEach;
+    public String   status;
+    public int      orderLineNumber = 1;
 
     public createOrder() {}
 
@@ -19,7 +18,6 @@ public class createOrder {
         Scanner sc = new Scanner(System.in);
         int choice = 0;
         boolean orderAnotherProduct = true;
-        boolean isConfirmed = true;
         orders o = new orders();
         products p = new products();
 
@@ -38,8 +36,8 @@ public class createOrder {
             System.out.println("Connection Successful");
             conn.setAutoCommit(false);
 
-            PreparedStatement pstmt = conn.prepareStatement("SELECT orderNumber, orderDate, status, customerNumber FROM orders WHERE orderNumber=? FOR UPDATE");
-            pstmt.setInt(1, orderNumber); 
+            Timestamp orderDate = new Timestamp(System.currentTimeMillis());
+            status = "In Process";
 
             List <orders> orderList = new ArrayList<>();
 
@@ -60,6 +58,8 @@ public class createOrder {
                 System.out.println("[1] YES [2] NO");
                 choice = sc.nextInt();
                 System.out.println();
+
+                order.orderLineNumber = orderLineNumber++;
 
                 orderList.add(order);
 
@@ -83,17 +83,51 @@ public class createOrder {
                 System.out.println(order.productCode);
                 System.out.println(order.quantityOrdered);
                 System.out.println(order.priceEach);
+                System.out.println(order.orderLineNumber);
+                System.out.println();
             }
 
-            if (isConfirmed) {
-                o.createOrderRecord(); // Insert new Order Record in the Orders and Orderdetails table
-                p.updateInfo(); // Update the Product Quantity
+            System.out.println("Confirm Order?");
+            System.out.println("[1] YES [2] NO");
+            choice = sc.nextInt();
+
+            if (choice == 1) {
+                PreparedStatement pstmt = conn.prepareStatement ("INSERT INTO orders (orderDate, requiredDate, status, customerNumber) " + "VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                pstmt.setTimestamp(1, orderDate);
+                pstmt.setString(2, requiredDate);
+                pstmt.setString(3, status);
+                pstmt.setInt(4, customerNumber);
+                pstmt.executeUpdate();
+
+                ResultSet generatedKeys = pstmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    orderNumber = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Failed to retrieve auto-generated orderNumber.");
+                }
+    
+                for(orders order: orderList){
+                PreparedStatement pstmtorderinfo = conn.prepareStatement ("INSERT INTO orderdetails (orderNumber, productCode, quantityOrdered, priceEach, orderLineNumber) " + "VALUES (?, ?, ?, ?, ?)");
+                pstmtorderinfo.setInt(1, orderNumber);
+                pstmtorderinfo.setString(2, order.productCode);
+                pstmtorderinfo.setInt(3, order.quantityOrdered);
+                pstmtorderinfo.setFloat(4, order.priceEach);
+                pstmtorderinfo.setInt(5, order.orderLineNumber);
+                pstmtorderinfo.executeUpdate();
+
+                pstmtorderinfo.close();
+                }
+
+                //p.updateInfo(); // Update the Product Quantity
                 System.out.println("Order confirmed!");
-            } else {
+
+                pstmt.close();
+            } 
+            
+            if (choice == 2) {
                 System.out.println("Order canceled!");
             }
 
-            pstmt.close();
             conn.commit();
             conn.close();
             return 1;

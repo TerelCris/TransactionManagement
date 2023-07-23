@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.*;
+import java.time.LocalDateTime;
 
 public class orders {
     public int      orderNumber;
@@ -29,6 +30,7 @@ public class orders {
         public int quantityOrdered;
         public float priceEach;
         public int orderLineNumber;
+        
         public OrderDetail(String productCode, int quantityOrdered, float priceEach, int orderLineNumber){
             this.productCode = productCode;
             this.quantityOrdered = quantityOrdered;
@@ -41,10 +43,6 @@ public class orders {
         Scanner sc = new Scanner(System.in);
         int choice = 0;
         boolean orderAnotherProduct = true;
-        Connection conn = null;
-        PreparedStatement pstmtOrder = null;
-        PreparedStatement pstmtOrderinfo = null;
-        PreparedStatement pstmtProduct = null;
         
         System.out.println("Enter Customer Number:");
         customerNumber = sc.nextInt();
@@ -53,8 +51,9 @@ public class orders {
         System.out.println("Enter Required Date:");
         requiredDate = sc.nextLine();
         System.out.println();
+
         try{
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/dbsales?user=root&password=12345678");
+            Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/dbsales?user=root&password=12345678");
             System.out.println("Connection Successful");
             conn.setAutoCommit(false);
             Timestamp orderDate = new Timestamp(System.currentTimeMillis());
@@ -62,10 +61,13 @@ public class orders {
             while(orderAnotherProduct){
                 System.out.println("Enter Product Code:");
                 String productCode = sc.nextLine();
+                
                 System.out.println("Enter Quantity:");
                 int quantityOrdered = sc.nextInt(); 
+
                 System.out.println("Enter the Price Each:");
                 float priceEach = sc.nextFloat();
+
                 System.out.println();
                 orderDetails.add(new OrderDetail(productCode, quantityOrdered, priceEach, orderDetails.size() + 1));
                 
@@ -73,6 +75,7 @@ public class orders {
                 System.out.println("[1] YES [2] NO");
                 choice = sc.nextInt();
                 System.out.println();
+
                 if(choice == 2){
                     orderAnotherProduct = false;
                     break;
@@ -82,6 +85,7 @@ public class orders {
             System.out.println("Required Date of Delivery: " + requiredDate);
             System.out.println("Order Details:");
             System.out.println();
+
             for(OrderDetail order: orderDetails){
                 System.out.println("Product Code: " + order.productCode);
                 System.out.println("Quantity: " + order.quantityOrdered);
@@ -89,11 +93,13 @@ public class orders {
                 System.out.println("Order Line Number: " + order.orderLineNumber);
                 System.out.println();
             }
+            
             System.out.println("Confirm Order?");
             System.out.println("[1] YES [2] NO");
             choice = sc.nextInt();
+
             if (choice == 1) {
-                pstmtOrder = conn.prepareStatement ("INSERT INTO orders (orderDate, requiredDate, status, customerNumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement pstmtOrder = conn.prepareStatement ("INSERT INTO orders (orderDate, requiredDate, status, customerNumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 pstmtOrder.setTimestamp(1, orderDate);
                 pstmtOrder.setString(2, requiredDate);
                 pstmtOrder.setString(3, status);
@@ -103,7 +109,8 @@ public class orders {
                 if (generatedKeys.next()) {
                     orderNumber = generatedKeys.getInt(1);
                 }
-                pstmtOrderinfo = conn.prepareStatement ("INSERT INTO orderdetails (orderNumber, productCode, quantityOrdered, priceEach, orderLineNumber) " + "VALUES (?, ?, ?, ?, ?)");
+
+                PreparedStatement pstmtOrderinfo = conn.prepareStatement(  "INSERT INTO orderdetails (orderNumber, productCode, quantityOrdered, priceEach, orderLineNumber) VALUES (?, ?, ?, ?, ?)");
                 for(OrderDetail order: orderDetails){
                     pstmtOrderinfo.setInt(1, orderNumber);
                     pstmtOrderinfo.setString(2, order.productCode);
@@ -114,7 +121,7 @@ public class orders {
                 }
                 
                 
-                pstmtProduct = conn.prepareStatement("UPDATE products SET quantityInStock = quantityInStock - ? WHERE productCode = ?");
+                PreparedStatement pstmtProduct = conn.prepareStatement("UPDATE products SET quantityInStock = quantityInStock - ? WHERE productCode = ?");
     
                 for (OrderDetail order : orderDetails) {
                     pstmtProduct.setInt(1, order.quantityOrdered);
@@ -123,11 +130,16 @@ public class orders {
                 }
                 
                 System.out.println("Order confirmed!");
+
+                pstmtOrder.close();
+                pstmtOrderinfo.close();
+                pstmtProduct.close();
             } 
             
             if (choice == 2) {
                 System.out.println("Order cancelled!");
             }
+            
             conn.commit();
             conn.close();
             
@@ -154,6 +166,7 @@ public class orders {
             
             ResultSet rs = pstmt.executeQuery();   
             List <orders> orderList = new ArrayList<>();
+            
             while (rs.next()) {
             orders order = new orders();
                 
@@ -190,7 +203,7 @@ public class orders {
             System
             .out.println();
             }
-            
+
             System.out.println("Press enter key to end transaction");
             sc.nextLine();
             pstmt.close();
@@ -262,7 +275,7 @@ public class orders {
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/dbsales?user=root&password=12345678");
             System.out.println("Connection Successful");
             conn.setAutoCommit(false);
-            PreparedStatement pstmt = conn.prepareStatement("SELECT orderNumber, orderDate, status, customerNumber FROM orders WHERE orderNumber=? FOR UPDATE");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT orderNumber, orderDate, shippedDate, status, customerNumber FROM orders WHERE orderNumber=? FOR UPDATE");
             pstmt.setInt(1, orderNumber);
             System.out.println("Press enter key to start retrieving the data");
             sc.nextLine();
@@ -272,7 +285,8 @@ public class orders {
             while (rs.next()) {
                 
             orderNumber             = rs.getInt("orderNumber");     
-            orderDate               = rs.getString("orderDate");                 
+            orderDate               = rs.getString("orderDate");
+            shippedDate             = rs.getString("shippedDate");                 
             status                  = rs.getString("status");
             customerNumber          = rs.getInt("customerNumber");
             }
@@ -288,7 +302,7 @@ public class orders {
             choice = sc.nextInt();
 
             if(choice == 1){
-                if(!status.equals("Shipped")){
+                if(!status.equals("Shipped") && shippedDate.equals(null)){
                     status = "Cancelled";
                     pstmt = conn.prepareStatement ("UPDATE orders SET status=? WHERE orderNumber=?");
                     pstmt.setString(1,  status);

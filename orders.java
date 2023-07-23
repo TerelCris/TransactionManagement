@@ -1,6 +1,5 @@
 import java.sql.*;
 import java.util.*;
-import java.time.LocalDateTime;
 
 public class orders {
     public int      orderNumber;
@@ -39,6 +38,7 @@ public class orders {
         }
     }
 
+
     public void createOrder(){
         Scanner sc = new Scanner(System.in);
         int choice = 0;
@@ -56,6 +56,7 @@ public class orders {
             Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/dbsales?user=root&password=12345678");
             System.out.println("Connection Successful");
             conn.setAutoCommit(false);
+
             Timestamp orderDate = new Timestamp(System.currentTimeMillis());
             String status = "In Process";
             while(orderAnotherProduct){
@@ -69,6 +70,7 @@ public class orders {
                 float priceEach = sc.nextFloat();
 
                 System.out.println();
+                
                 orderDetails.add(new OrderDetail(productCode, quantityOrdered, priceEach, orderDetails.size() + 1));
                 
                 System.out.println("Do you want to add another order?");
@@ -139,7 +141,7 @@ public class orders {
             if (choice == 2) {
                 System.out.println("Order cancelled!");
             }
-            
+
             conn.commit();
             conn.close();
             
